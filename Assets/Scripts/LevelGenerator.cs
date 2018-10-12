@@ -6,6 +6,9 @@ public class LevelGenerator : MonoBehaviour {
 
     //public int LevelSize;
     public GameObject[] LevelPieces;
+    List<GameObject> leveltiles = new List<GameObject>();
+    Vector2 home = new Vector2(-6, 0);
+
     private static LevelGenerator instance;
     public static LevelGenerator Instance
     {
@@ -22,13 +25,17 @@ public class LevelGenerator : MonoBehaviour {
     public void GenerateLevel(int levelsize)
     {
         bool generatecomplete = false;
+        bool tilegenerated = false;
         bool samepositionError = false;
-        int tileproblems = 0;
-        //Vector2 gridposition = Vector2.zero;
-        int i = 0;
-        int p = 0;
-        List<GameObject> leveltiles = new List<GameObject>();
-        Vector2 home = new Vector2(-6, 0);
+        GenerateHomeTile();
+        for (int p = 0; p <= levelsize; p++)
+        {
+            GenerateTile(leveltiles[p]);
+        }
+    }
+
+    void GenerateHomeTile()
+    {
         foreach (GameObject levelPiece in LevelPieces)
         {
             if (levelPiece.GetComponent<LevelPiece>().IsLevelBeginning)
@@ -36,144 +43,139 @@ public class LevelGenerator : MonoBehaviour {
                 GameObject beginningTile = Instantiate(levelPiece, home, Quaternion.identity);
                 beginningTile.GetComponent<LevelPiece>().GridPosition = Vector2.zero;
                 leveltiles.Add(beginningTile);
-                p = 0;
-                i = 0;
                 break;
             }
         }
-        while (!generatecomplete) {
-            if (leveltiles[p].GetComponent<LevelPiece>().RightConnect)
+    }
+
+    void GenerateTile(GameObject currenttile)
+    {
+        bool Righttilegenerated = false;
+        bool Lefttilegenerated = false;
+        bool Toptilegenerated = false;
+        bool Bottomtilegenerated = false;
+        bool samepositionError = false;
+
+        if (currenttile.GetComponent<LevelPiece>().RightConnect)
+        {
+            samepositionError = false;
+            while (!Righttilegenerated)
             {
-                samepositionError = false;
                 foreach (GameObject levelPiece in LevelPieces)
                 {
                     if (Random.value < 0.1 && levelPiece.GetComponent<LevelPiece>().LeftConnect && !levelPiece.GetComponent<LevelPiece>().IsLevelBeginning)
                     {
-                        GameObject NewTile = Instantiate(levelPiece, new Vector2(leveltiles[p].transform.position.x + 3, leveltiles[p].transform.position.y), Quaternion.identity);
-                        NewTile.GetComponent<LevelPiece>().GridPosition = new Vector2(leveltiles[p].GetComponent<LevelPiece>().GridPosition.x + 1, leveltiles[p].GetComponent<LevelPiece>().GridPosition.y);
-                        foreach (GameObject levelpiececompare in leveltiles)
+                        Vector2 newgridposition = new Vector2(currenttile.GetComponent<LevelPiece>().GridPosition.x + 1, currenttile.GetComponent<LevelPiece>().GridPosition.y);
+                        foreach (GameObject tilecompare in leveltiles)
                         {
-                            if (NewTile.GetComponent<LevelPiece>().GridPosition == levelpiececompare.GetComponent<LevelPiece>().GridPosition)
+                            if (tilecompare.GetComponent<LevelPiece>().GridPosition == newgridposition)
                             {
-                                Destroy(NewTile);
                                 samepositionError = true;
+                                Righttilegenerated = true;
                                 break;
                             }
                         }
                         if (!samepositionError)
                         {
+                            GameObject NewTile = Instantiate(levelPiece, new Vector2(currenttile.transform.position.x + 3, currenttile.transform.position.y), Quaternion.identity);
+                            NewTile.GetComponent<LevelPiece>().GridPosition = newgridposition;
                             leveltiles.Add(NewTile);
-                            i++;
+                            Righttilegenerated = true;
                             break;
                         }
                     }
                 }
             }
-            if (leveltiles[p].GetComponent<LevelPiece>().LeftConnect)
+        }
+
+        if (currenttile.GetComponent<LevelPiece>().LeftConnect)
+        {
+            samepositionError = false;
+            while (!Lefttilegenerated)
             {
-                samepositionError = false;
                 foreach (GameObject levelPiece in LevelPieces)
                 {
                     if (Random.value < 0.1 && levelPiece.GetComponent<LevelPiece>().RightConnect && !levelPiece.GetComponent<LevelPiece>().IsLevelBeginning)
                     {
-                        GameObject NewTile = Instantiate(levelPiece, new Vector2(leveltiles[p].transform.position.x - 3, leveltiles[p].transform.position.y), Quaternion.identity);
-                        NewTile.GetComponent<LevelPiece>().GridPosition = new Vector2(leveltiles[p].GetComponent<LevelPiece>().GridPosition.x - 1, leveltiles[p].GetComponent<LevelPiece>().GridPosition.y);
-                        foreach (GameObject levelpiececompare in leveltiles)
+                        Vector2 newgridposition = new Vector2(currenttile.GetComponent<LevelPiece>().GridPosition.x - 1, currenttile.GetComponent<LevelPiece>().GridPosition.y);
+                        foreach (GameObject tilecompare in leveltiles)
                         {
-                            if (NewTile.GetComponent<LevelPiece>().GridPosition == levelpiececompare.GetComponent<LevelPiece>().GridPosition)
+                            if (tilecompare.GetComponent<LevelPiece>().GridPosition == newgridposition)
                             {
-                                Destroy(NewTile);
                                 samepositionError = true;
+                                Lefttilegenerated = true;
                                 break;
                             }
                         }
                         if (!samepositionError)
                         {
-                            leveltiles.Add(NewTile);
-                            i++;
+                            GameObject NewTile = Instantiate(levelPiece, new Vector2(currenttile.transform.position.x - 3, currenttile.transform.position.y), Quaternion.identity);
+                            NewTile.GetComponent<LevelPiece>().GridPosition = newgridposition; leveltiles.Add(NewTile);
+                            Lefttilegenerated = true;
                             break;
                         }
                     }
                 }
             }
-            if (leveltiles[p].GetComponent<LevelPiece>().TopConnect)
+        }
+
+        if (currenttile.GetComponent<LevelPiece>().TopConnect)
+        {
+            samepositionError = false;
+            while (!Toptilegenerated)
             {
-                samepositionError = false;
                 foreach (GameObject levelPiece in LevelPieces)
                 {
                     if (Random.value < 0.1 && levelPiece.GetComponent<LevelPiece>().BottomConnect && !levelPiece.GetComponent<LevelPiece>().IsLevelBeginning)
                     {
-                        GameObject NewTile = Instantiate(levelPiece, new Vector2(leveltiles[p].transform.position.x, leveltiles[p].transform.position.y + 3), Quaternion.identity);
-                        NewTile.GetComponent<LevelPiece>().GridPosition = new Vector2(leveltiles[p].GetComponent<LevelPiece>().GridPosition.x, leveltiles[p].GetComponent<LevelPiece>().GridPosition.y + 1);
-                        foreach (GameObject levelpiececompare in leveltiles)
+                        Vector2 newgridposition = new Vector2(currenttile.GetComponent<LevelPiece>().GridPosition.x, currenttile.GetComponent<LevelPiece>().GridPosition.y + 1);
+                        foreach (GameObject tilecompare in leveltiles)
                         {
-                            if (NewTile.GetComponent<LevelPiece>().GridPosition == levelpiececompare.GetComponent<LevelPiece>().GridPosition)
+                            if (tilecompare.GetComponent<LevelPiece>().GridPosition == newgridposition)
                             {
-                                Destroy(NewTile);
                                 samepositionError = true;
+                                Toptilegenerated = true;
                                 break;
                             }
                         }
                         if (!samepositionError)
                         {
-                            leveltiles.Add(NewTile);
-                            i++;
+                            GameObject NewTile = Instantiate(levelPiece, new Vector2(currenttile.transform.position.x, currenttile.transform.position.y + 3), Quaternion.identity);
+                            NewTile.GetComponent<LevelPiece>().GridPosition = newgridposition; leveltiles.Add(NewTile);
+                            Toptilegenerated = true;
                             break;
                         }
                     }
                 }
             }
-            if (leveltiles[p].GetComponent<LevelPiece>().BottomConnect)
+        }
+
+        if (currenttile.GetComponent<LevelPiece>().BottomConnect)
+        {
+            samepositionError = false;
+            while (!Bottomtilegenerated)
             {
-                samepositionError = false;
                 foreach (GameObject levelPiece in LevelPieces)
                 {
                     if (Random.value < 0.1 && levelPiece.GetComponent<LevelPiece>().TopConnect && !levelPiece.GetComponent<LevelPiece>().IsLevelBeginning)
                     {
-                        GameObject NewTile = Instantiate(levelPiece, new Vector2(leveltiles[p].transform.position.x, leveltiles[p].transform.position.y - 3), Quaternion.identity);
-                        NewTile.GetComponent<LevelPiece>().GridPosition = new Vector2(leveltiles[p].GetComponent<LevelPiece>().GridPosition.x, leveltiles[p].GetComponent<LevelPiece>().GridPosition.y - 1);
-                        foreach (GameObject levelpiececompare in leveltiles)
+                        Vector2 newgridposition = new Vector2(currenttile.GetComponent<LevelPiece>().GridPosition.x, currenttile.GetComponent<LevelPiece>().GridPosition.y - 1);
+                        foreach (GameObject tilecompare in leveltiles)
                         {
-                            if (NewTile.GetComponent<LevelPiece>().GridPosition == levelpiececompare.GetComponent<LevelPiece>().GridPosition)
+                            if (tilecompare.GetComponent<LevelPiece>().GridPosition == newgridposition)
                             {
-                                Destroy(NewTile);
                                 samepositionError = true;
+                                Bottomtilegenerated = true;
                                 break;
                             }
                         }
                         if (!samepositionError)
                         {
-                            leveltiles.Add(NewTile);
-                            i++;
+                            GameObject NewTile = Instantiate(levelPiece, new Vector2(currenttile.transform.position.x, currenttile.transform.position.y - 3), Quaternion.identity);
+                            NewTile.GetComponent<LevelPiece>().GridPosition = newgridposition; leveltiles.Add(NewTile);
+                            Bottomtilegenerated = true;
                             break;
                         }
-                    }
-                }
-            }
-            p++;
-            if (p == levelsize)
-            {
-                p = 0;
-            }
-            if (i == levelsize)
-            {
-                tileproblems = 0;
-                foreach (GameObject levelpiece in leveltiles)
-                {
-                    foreach (GameObject levelpiececheck in leveltiles)
-                    {
-                        if (levelpiece.GetComponent<LevelPiece>().GridPosition == levelpiececheck.GetComponent<LevelPiece>().GridPosition)
-                        {
-                            Destroy(levelpiececheck);
-                            tileproblems++;
-                            p--;
-                            break;
-                        }
-                    }
-                    if (tileproblems == 0)
-                    {
-                        generatecomplete = true;
-                        Debug.Log("generate complete");
                     }
                 }
             }
@@ -182,7 +184,7 @@ public class LevelGenerator : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        GenerateLevel(10);
+        GenerateLevel(100);
 	}
 	
 	// Update is called once per frame

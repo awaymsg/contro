@@ -34,7 +34,7 @@ public class GroundCollideCheck : MonoBehaviour {
                 PlayerBehaviour.Instance.PlayerBody.gravityScale = 0;
                 if (Input.GetAxisRaw("Vertical") == -1)
                 {
-                    collision.gameObject.GetComponent<PlatformEffector2D>().surfaceArc = 0;
+                    //collision.gameObject.GetComponent<PlatformEffector2D>().surfaceArc = 0;
                 }
             //}
         }
