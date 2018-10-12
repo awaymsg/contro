@@ -62,9 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\FloorScript.cs" />
-    <Compile Include="Assets\GroundCollideCheck.cs" />
     <Compile Include="Assets\LadderScript.cs" />
-    <Compile Include="Assets\LevelGenerator.cs" />
     <Compile Include="Assets\Scripts\BackGroundMove.cs" />
     <Compile Include="Assets\Scripts\bulletBehaviour.cs" />
     <Compile Include="Assets\Scripts\CameraFollow.cs" />
@@ -72,7 +70,9 @@
     <Compile Include="Assets\Scripts\DialogueManager.cs" />
     <Compile Include="Assets\Scripts\DMGTextBehaviour.cs" />
     <Compile Include="Assets\Scripts\GameLord.cs" />
+    <Compile Include="Assets\Scripts\GroundCollideCheck.cs" />
     <Compile Include="Assets\Scripts\GroundEnemyBehaviour.cs" />
+    <Compile Include="Assets\Scripts\LevelGenerator.cs" />
     <Compile Include="Assets\Scripts\LevelPiece.cs" />
     <Compile Include="Assets\Scripts\PlayerBehaviour.cs" />
     <Compile Include="Assets\Tilemap\Brushes\Tint Brush Smooth\Scripts\TintTextureGenerator.cs" />

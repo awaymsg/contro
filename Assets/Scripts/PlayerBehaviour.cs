@@ -89,7 +89,7 @@ public class PlayerBehaviour : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(OnLadder);
+        //Debug.Log(OnLadder);
         currentSpeed = PlayerBody.velocity;
         WeaponSwitchTime -= Time.deltaTime;
         ShootTime -= Time.deltaTime;
