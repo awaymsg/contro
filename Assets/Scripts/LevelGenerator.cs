@@ -6,6 +6,9 @@ public class LevelGenerator : MonoBehaviour {
 
     //public int LevelSize;
     public GameObject[] LevelPieces;
+    public GameObject WallPiece;
+    public GameObject FloorPiece;
+    //public GameObject LadderPiece;
     List<GameObject> leveltiles = new List<GameObject>();
     Vector2 home = new Vector2(-6, 0);
 
@@ -24,14 +27,13 @@ public class LevelGenerator : MonoBehaviour {
 
     public void GenerateLevel(int levelsize)
     {
-        bool generatecomplete = false;
-        bool tilegenerated = false;
-        bool samepositionError = false;
         GenerateHomeTile();
         for (int p = 0; p <= levelsize; p++)
         {
             GenerateTile(leveltiles[p]);
         }
+        CloseEdges();
+        FillLadders();
     }
 
     void GenerateHomeTile()
@@ -182,13 +184,137 @@ public class LevelGenerator : MonoBehaviour {
         }
     }
 
+    void CloseEdges()
+    {
+        foreach (GameObject levelpiece in leveltiles)
+        {
+            bool spaceoccupiedleft = false;
+            bool spaceoccupiedright = false;
+            bool spaceoccupiedtop = false;
+            bool spaceoccupiedbottom = false;
+            foreach (GameObject levelpiececompare in leveltiles)
+            {
+                if (levelpiece.GetComponent<LevelPiece>().LeftConnect)
+                {
+                    Vector2 gridpositioncompare = new Vector2(levelpiece.GetComponent<LevelPiece>().GridPosition.x - 1, levelpiece.GetComponent<LevelPiece>().GridPosition.y);
+                    if (gridpositioncompare == levelpiececompare.GetComponent<LevelPiece>().GridPosition)
+                    {
+                        spaceoccupiedleft = true;
+                    }
+                }
+                if (levelpiece.GetComponent<LevelPiece>().RightConnect)
+                {
+                    Vector2 gridpositioncompare = new Vector2(levelpiece.GetComponent<LevelPiece>().GridPosition.x + 1, levelpiece.GetComponent<LevelPiece>().GridPosition.y);
+                    if (gridpositioncompare == levelpiececompare.GetComponent<LevelPiece>().GridPosition)
+                    {
+                        spaceoccupiedright = true;
+                    }
+                }
+                if (levelpiece.GetComponent<LevelPiece>().TopConnect)
+                {
+                    Vector2 gridpositioncompare = new Vector2(levelpiece.GetComponent<LevelPiece>().GridPosition.x, levelpiece.GetComponent<LevelPiece>().GridPosition.y + 1);
+                    if (gridpositioncompare == levelpiececompare.GetComponent<LevelPiece>().GridPosition)
+                    {
+                        spaceoccupiedtop = true;
+                    }
+                }
+                if (levelpiece.GetComponent<LevelPiece>().BottomConnect)
+                {
+                    Vector2 gridpositioncompare = new Vector2(levelpiece.GetComponent<LevelPiece>().GridPosition.x, levelpiece.GetComponent<LevelPiece>().GridPosition.y - 1);
+                    if (gridpositioncompare == levelpiececompare.GetComponent<LevelPiece>().GridPosition)
+                    {
+                        spaceoccupiedbottom = true;
+                    }
+                }
+            }
+            if (!spaceoccupiedleft & levelpiece.GetComponent<LevelPiece>().LeftConnect)
+            {
+                Vector2 WallPosition = new Vector2(levelpiece.transform.position.x, levelpiece.transform.position.y + 0.1f);
+                for (int i = 0; i < 10; i++)
+                {
+                    GameObject NewWall = Instantiate(WallPiece, WallPosition, Quaternion.identity);
+                    NewWall.transform.SetParent(levelpiece.transform);
+                    WallPosition = new Vector2(WallPosition.x, WallPosition.y - 0.3f);
+                }
+            }
+            if (!spaceoccupiedright & levelpiece.GetComponent<LevelPiece>().RightConnect)
+            {
+                Vector2 WallPosition = new Vector2(levelpiece.transform.position.x + 3f, levelpiece.transform.position.y + 0.1f);
+                for (int i = 0; i < 10; i++)
+                {
+                    GameObject NewWall = Instantiate(WallPiece, WallPosition, Quaternion.identity);
+                    NewWall.transform.SetParent(levelpiece.transform);
+                    WallPosition = new Vector2(WallPosition.x, WallPosition.y - 0.3f);
+                }
+            }
+            if (!spaceoccupiedtop & levelpiece.GetComponent<LevelPiece>().TopConnect)
+            {
+                Vector2 FloorPosition = new Vector2(levelpiece.transform.position.x, levelpiece.transform.position.y + 0.25f);
+                for (int i = 0; i < 10; i++)
+                {
+                    GameObject NewFloor = Instantiate(FloorPiece, FloorPosition, Quaternion.identity);
+                    NewFloor.transform.SetParent(levelpiece.transform);
+                    FloorPosition = new Vector2(FloorPosition.x + 0.3f, FloorPosition.y);
+                    if (levelpiece.GetComponent<LevelPiece>().TopEdgeLadderPiece != null)
+                    {
+                        foreach(GameObject topladderpiece in levelpiece.GetComponent<LevelPiece>().TopEdgeLadderPiece)
+                        {
+                            Destroy(topladderpiece);
+                        }
+                    }
+                }
+            }
+            if (!spaceoccupiedbottom & levelpiece.GetComponent<LevelPiece>().BottomConnect)
+            {
+                Vector2 FloorPosition = new Vector2(levelpiece.transform.position.x, levelpiece.transform.position.y - 2.45f);
+                for (int i = 0; i < 10; i++)
+                {
+                    GameObject NewFloor = Instantiate(FloorPiece, FloorPosition, Quaternion.identity);
+                    NewFloor.transform.SetParent(levelpiece.transform);
+                    FloorPosition = new Vector2(FloorPosition.x + 0.3f, FloorPosition.y);
+                }
+            }
+        }
+    }
+
+    void FillLadders()
+    {
+        foreach (GameObject leveltile in leveltiles)
+        {
+            if (leveltile.GetComponent<LevelPiece>().BottomConnect && leveltile.GetComponent<LevelPiece>().BottomEdgeLadderPiece != null)
+            {
+                foreach (GameObject bottomladder in leveltile.GetComponent<LevelPiece>().BottomEdgeLadderPiece)
+                {
+                    double ladderdistance;
+                    int ladderamt = 0;
+                    //bool laddercomplete = true;
+                    Vector3 ladderposition = bottomladder.transform.position;
+                    RaycastHit2D orighit = Physics2D.Raycast(bottomladder.transform.position, Vector2.down);
+                    if (orighit.collider != null)
+                    {
+                        if (orighit.collider.gameObject.tag == "Floor" || orighit.collider.gameObject.tag == "Ladder")
+                        {
+                            ladderdistance = System.Math.Round((ladderposition - orighit.transform.position).magnitude, 1);
+                            Debug.Log(ladderdistance);
+                            ladderamt = (int)Mathf.Round((float)ladderdistance / 0.3f);
+                            Debug.Log(ladderamt);
+                            //laddercomplete = false;
+                        }
+                    }
+                    for (int p = 1; p < ladderamt; p++)
+                    {
+                        Debug.Log("entered loop");
+                        ladderposition = new Vector2(ladderposition.x, ladderposition.y - 0.3f);
+                        GameObject newladder = Instantiate(bottomladder, ladderposition, Quaternion.identity, leveltile.transform);
+                    }
+                }
+            }
+        }
+    }
+
 	// Use this for initialization
 	void Start () {
         GenerateLevel(100);
 	}
 	
-	// Update is called once per frame
-	void Update () {
-		
-	}
 }

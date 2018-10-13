@@ -3212,9 +3212,13 @@ MonoBehaviour:
   IsDeadEnd: 0
   FloorPosition: {x: 0, y: 0}
   LadderPosition: {x: 0, y: 0}
+  GridPosition: {x: 0, y: 0}
   LeftEdgeFloorPiece: {fileID: 0}
   RightEdgeFloorPiece: {fileID: 0}
-  TopEdgeLadderPiece: []
+  TopEdgeFloorPiece: {fileID: 0}
+  BottomEdgeFloorPiece: {fileID: 0}
+  TopEdgeLadderPiece:
+  - {fileID: 1727479108044154}
   BottomEdgeLadderPiece:
   - {fileID: 1801135498968310}
 --- !u!114 &114307918656006238

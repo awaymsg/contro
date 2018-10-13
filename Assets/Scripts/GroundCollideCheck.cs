@@ -48,10 +48,6 @@ public class GroundCollideCheck : MonoBehaviour {
             PlayerBehaviour.Instance.OnLadder = false;
             ladderTime = 0.3f;
             //gameObject.GetComponent<BoxCollider2D>().isTrigger = false;
-            if (collision.GetComponent<PlatformEffector2D>().surfaceArc == 0)
-            {
-                collision.GetComponent<PlatformEffector2D>().surfaceArc = 180;
-            }
         }
         //if (collision.gameObject.tag == "Floor")
         //{

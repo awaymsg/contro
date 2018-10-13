@@ -2361,11 +2361,16 @@ MonoBehaviour:
   IsDeadEnd: 0
   FloorPosition: {x: 0, y: 0}
   LadderPosition: {x: 0, y: 0}
+  GridPosition: {x: 0, y: 0}
   LeftEdgeFloorPiece: {fileID: 0}
   RightEdgeFloorPiece: {fileID: 0}
-  TopEdgeLadderPiece: []
+  TopEdgeFloorPiece: {fileID: 0}
+  BottomEdgeFloorPiece: {fileID: 0}
+  TopEdgeLadderPiece:
+  - {fileID: 1288958325869936}
   BottomEdgeLadderPiece:
-  - {fileID: 1038276011432738}
+  - {fileID: 1030559972091968}
+  - {fileID: 1747924949400928}
 --- !u!114 &114478618530460006
 MonoBehaviour:
   m_ObjectHideFlags: 1
